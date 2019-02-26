@@ -1,21 +1,28 @@
-const http = require("http");
-const url = require("url");
+const https = require('http');
+const url = require('url');
 
-export const isUrlReachable = (Url, callback) => {
-  const options = {
-    method: "HEAD",
-    host: url.parse(Url).host,
-    port: 80,
-    path: url.parse(Url).pathname
-  };
+const isUrlReachable = (urlPath) => {
+    const options = {
+        method: 'HEAD',
+        host: url.parse(urlPath).host,
+        port: 80,
+        path: url.parse(urlPath).pathname
+    };
 
-  http
-    .request(options, result =>
-      callback(/4\d\d/.test(result.statusCode) === false)
-    )
-    .on("error", error => callback(false))
-    .end();
+    return new Promise((resolve, reject) => {
+        https
+            .request(options, result =>
+                resolve(/4\d\d/.test(result.statusCode) === false)
+            )
+            .on('error', error => reject(false))
+            .end();
+    });
 };
 
-isUrlReachable("https://stackoverflow.com", console.log);
-isUrlReachable("https://stackoverfflow.com", console.log);
+isUrlReachable('https://jsonplaceholder.typicode.com/posts/1')
+    .then(console.log)
+    .catch(console.error);
+
+isUrlReachable('https://jsonplaceholderr.typicode.com/posts/1')
+    .then(console.log)
+    .catch(console.error);
